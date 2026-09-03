@@ -95,58 +95,89 @@
 <body>
   <main class="board">
     <section class="ticker" aria-label="Live ticker tape">
-      <div class="tradingview-widget-container">
-        <div class="tradingview-widget-container__widget"></div>
-        <script src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-        {
-          "symbols": [
-            {"proName":"FOREXCOM:SPXUSD","title":"S&P 500"},
-            {"proName":"NASDAQ:NDX","title":"NASDAQ 100"},
-            {"proName":"AMEX:SPY","title":"SPY"},
-            {"proName":"NASDAQ:QQQ","title":"QQQ"},
-            {"proName":"NASDAQ:PLTR","title":"PLTR"},
-            {"proName":"NASDAQ:NVDA","title":"NVDA"},
-            {"proName":"NASDAQ:AAPL","title":"AAPL"},
-            {"proName":"NASDAQ:AMZN","title":"AMZN"},
-            {"proName":"NASDAQ:GOOGL","title":"GOOGL"},
-            {"proName":"NASDAQ:META","title":"META"},
-            {"proName":"COINBASE:BTCUSD","title":"BITCOIN"}
-          ],
-          "showSymbolLogo": false,
-          "isTransparent": true,
-          "displayMode": "adaptive",
-          "colorTheme": "dark",
-          "locale": "en"
-        }
-        </script>
-      </div>
+      <div id="ticker-widget" class="tradingview-widget-container"></div>
     </section>
 
     <section class="heatmap" aria-label="S&P 500 stock heatmap">
-      <div class="tradingview-widget-container">
-        <div class="tradingview-widget-container__widget"></div>
-        <script src="https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js" async>
-        {
-          "exchanges": [],
-          "dataSource": "SPX500",
-          "grouping": "sector",
-          "blockSize": "market_cap_basic",
-          "blockColor": "change",
-          "locale": "en",
-          "symbolUrl": "",
-          "colorTheme": "dark",
-          "hasTopBar": false,
-          "isDataSetEnabled": false,
-          "isZoomEnabled": true,
-          "hasSymbolTooltip": true,
-          "isMonoSize": false,
-          "width": "100%",
-          "height": "100%"
-        }
-        </script>
-      </div>
+      <div id="heatmap-widget" class="tradingview-widget-container"></div>
     </section>
   </main>
+  <script>
+    (() => {
+      const tickerConfig = {
+        symbols: [
+          { proName: "FOREXCOM:SPXUSD", title: "S&P 500" },
+          { proName: "NASDAQ:NDX", title: "NASDAQ 100" },
+          { proName: "AMEX:SPY", title: "SPY" },
+          { proName: "NASDAQ:QQQ", title: "QQQ" },
+          { proName: "NASDAQ:PLTR", title: "PLTR" },
+          { proName: "NASDAQ:NVDA", title: "NVDA" },
+          { proName: "NASDAQ:AAPL", title: "AAPL" },
+          { proName: "NASDAQ:AMZN", title: "AMZN" },
+          { proName: "NASDAQ:GOOGL", title: "GOOGL" },
+          { proName: "NASDAQ:META", title: "META" },
+          { proName: "COINBASE:BTCUSD", title: "BITCOIN" }
+        ],
+        showSymbolLogo: false,
+        isTransparent: true,
+        displayMode: "adaptive",
+        colorTheme: "dark",
+        locale: "en"
+      };
+
+      const heatmapConfig = {
+        exchanges: [],
+        dataSource: "SPX500",
+        grouping: "sector",
+        blockSize: "market_cap_basic",
+        blockColor: "change",
+        locale: "en",
+        symbolUrl: "",
+        colorTheme: "dark",
+        hasTopBar: false,
+        isDataSetEnabled: false,
+        isZoomEnabled: true,
+        hasSymbolTooltip: true,
+        isMonoSize: false,
+        width: "100%",
+        height: "100%"
+      };
+
+      function mountWidget(id, source, config) {
+        const host = document.getElementById(id);
+        host.textContent = "";
+
+        const widget = document.createElement("div");
+        widget.className = "tradingview-widget-container__widget";
+        host.appendChild(widget);
+
+        const script = document.createElement("script");
+        script.src = source + "?fresh=" + Date.now();
+        script.async = true;
+        script.textContent = JSON.stringify(config);
+        host.appendChild(script);
+      }
+
+      function refreshMarketWidgets() {
+        mountWidget(
+          "ticker-widget",
+          "https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js",
+          tickerConfig
+        );
+        mountWidget(
+          "heatmap-widget",
+          "https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js",
+          heatmapConfig
+        );
+      }
+
+      refreshMarketWidgets();
+      setInterval(refreshMarketWidgets, 5 * 60 * 1000);
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) refreshMarketWidgets();
+      });
+    })();
+  </script>
   <button id="keep-awake" class="keep-awake" type="button">KEEP SCREEN ON</button>
   <div class="scroll-buffer" aria-hidden="true"></div>
   <script>
