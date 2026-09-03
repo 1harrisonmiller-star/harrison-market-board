@@ -59,9 +59,9 @@
       animation: pulse 2.2s ease-in-out infinite;
     }
     .divider { width: 1px; height: 12px; background: #334054; }
-    .ticker, .movers { position: relative; min-width: 0; min-height: 0; overflow: hidden; }
+    .ticker, .overview { position: relative; min-width: 0; min-height: 0; overflow: hidden; }
     .ticker { border-bottom: 1px solid var(--line); background: var(--panel); }
-    .movers { padding: 0; background: var(--panel); }
+    .overview { padding: 0; background: var(--panel); }
     .tradingview-widget-container,
     .tradingview-widget-container__widget,
     iframe { width: 100% !important; height: 100% !important; }
@@ -97,8 +97,8 @@
       <div id="ticker-widget" class="tradingview-widget-container"></div>
     </section>
 
-    <section class="movers" aria-label="Current U.S. stock market movers">
-      <div id="movers-widget" class="tradingview-widget-container"></div>
+    <section class="overview" aria-label="Whole market overview">
+      <div id="overview-widget" class="tradingview-widget-container"></div>
     </section>
   </main>
   <script>
@@ -106,16 +106,13 @@
       const tickerConfig = {
         symbols: [
           { proName: "FOREXCOM:SPXUSD", title: "S&P 500" },
-          { proName: "NASDAQ:NDX", title: "NASDAQ 100" },
-          { proName: "AMEX:SPY", title: "SPY" },
-          { proName: "NASDAQ:QQQ", title: "QQQ" },
-          { proName: "NASDAQ:PLTR", title: "PLTR" },
-          { proName: "NASDAQ:NVDA", title: "NVDA" },
-          { proName: "NASDAQ:AAPL", title: "AAPL" },
-          { proName: "NASDAQ:AMZN", title: "AMZN" },
-          { proName: "NASDAQ:GOOGL", title: "GOOGL" },
-          { proName: "NASDAQ:META", title: "META" },
-          { proName: "COINBASE:BTCUSD", title: "BITCOIN" }
+          { proName: "FOREXCOM:NSXUSD", title: "NASDAQ 100" },
+          { proName: "FOREXCOM:DJI", title: "DOW 30" },
+          { proName: "TVC:RUT", title: "RUSSELL 2000" },
+          { proName: "CBOE:VIX", title: "VIX" },
+          { proName: "TVC:US10Y", title: "US 10Y" },
+          { proName: "TVC:USOIL", title: "CRUDE OIL" },
+          { proName: "OANDA:XAUUSD", title: "GOLD" }
         ],
         showSymbolLogo: false,
         isTransparent: true,
@@ -124,10 +121,9 @@
         locale: "en"
       };
 
-      const moversConfig = {
+      const overviewConfig = {
         colorTheme: "dark",
         dateRange: "1D",
-        exchange: "US",
         showChart: false,
         locale: "en",
         width: "100%",
@@ -135,7 +131,43 @@
         largeChartUrl: "",
         isTransparent: true,
         showSymbolLogo: false,
-        showFloatingTooltip: false
+        showFloatingTooltip: false,
+        tabs: [
+          {
+            title: "MARKET",
+            symbols: [
+              { s: "FOREXCOM:SPXUSD", d: "S&P 500" },
+              { s: "FOREXCOM:NSXUSD", d: "NASDAQ 100" },
+              { s: "FOREXCOM:DJI", d: "DOW 30" },
+              { s: "TVC:RUT", d: "RUSSELL 2000" }
+            ]
+          },
+          {
+            title: "SECTORS",
+            symbols: [
+              { s: "AMEX:XLK", d: "TECHNOLOGY" },
+              { s: "AMEX:XLF", d: "FINANCIALS" },
+              { s: "AMEX:XLE", d: "ENERGY" },
+              { s: "AMEX:XLV", d: "HEALTHCARE" },
+              { s: "AMEX:XLY", d: "CONSUMER" },
+              { s: "AMEX:XLI", d: "INDUSTRIALS" },
+              { s: "AMEX:XLC", d: "COMMUNICATION" },
+              { s: "AMEX:XLP", d: "STAPLES" },
+              { s: "AMEX:XLU", d: "UTILITIES" },
+              { s: "AMEX:XLRE", d: "REAL ESTATE" },
+              { s: "AMEX:XLB", d: "MATERIALS" }
+            ]
+          },
+          {
+            title: "RISK",
+            symbols: [
+              { s: "CBOE:VIX", d: "VOLATILITY (VIX)" },
+              { s: "TVC:US10Y", d: "US 10-YEAR YIELD" },
+              { s: "TVC:USOIL", d: "CRUDE OIL" },
+              { s: "OANDA:XAUUSD", d: "GOLD" }
+            ]
+          }
+        ]
       };
 
       function mountWidget(id, source, config) {
@@ -160,9 +192,9 @@
           tickerConfig
         );
         mountWidget(
-          "movers-widget",
-          "https://s3.tradingview.com/external-embedding/embed-widget-hotlists.js",
-          moversConfig
+          "overview-widget",
+          "https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js",
+          overviewConfig
         );
       }
 
