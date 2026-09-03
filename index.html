@@ -67,6 +67,22 @@
     iframe { width: 100% !important; height: 100% !important; }
     .heatmap iframe { height: calc(100% + 32px) !important; }
     .scroll-buffer { height: 96px; pointer-events: none; }
+    .keep-awake {
+      position: fixed;
+      right: 8px;
+      bottom: 8px;
+      z-index: 20;
+      padding: 7px 10px;
+      border: 1px solid rgba(77,240,138,.65);
+      border-radius: 999px;
+      background: rgba(7,9,12,.92);
+      color: var(--green);
+      font: 700 11px/1 Arial, sans-serif;
+      letter-spacing: .08em;
+      box-shadow: 0 3px 16px rgba(0,0,0,.35);
+      transition: opacity .4s ease;
+    }
+    .keep-awake.is-active { opacity: 0; pointer-events: none; }
     @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
     @media (max-height: 400px) {
       .board { grid-template-rows: 42px minmax(0, 1fr); }
