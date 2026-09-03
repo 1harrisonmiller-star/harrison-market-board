@@ -16,13 +16,17 @@
       --green: #4df08a;
     }
     * { box-sizing: border-box; }
-    html, body { width: 100%; min-height: 100%; margin: 0; }\n    html { overflow-y: auto; }\n    body { min-height: calc(100% + 96px); }
+    html, body { width: 100%; min-height: 100%; margin: 0; }
+    html { overflow-y: auto; }
+    body { min-height: calc(100% + 96px); }
     body {
       background: var(--bg);
       color: var(--text);
       font-family: "Arial Narrow", "Roboto Condensed", Arial, Helvetica, sans-serif;
     }
     .board {
+      position: sticky;
+      top: 0;
       display: grid;
       grid-template-rows: 46px minmax(0, 1fr);
       width: 100%;
@@ -61,7 +65,9 @@
     .tradingview-widget-container,
     .tradingview-widget-container__widget,
     iframe { width: 100% !important; height: 100% !important; }
-    .scroll-buffer { height: 96px; pointer-events: none; }\n    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+    .heatmap iframe { height: calc(100% + 32px) !important; }
+    .scroll-buffer { height: 96px; pointer-events: none; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
     @media (max-height: 400px) {
       .board { grid-template-rows: 42px minmax(0, 1fr); }
       header { padding: 0 10px; font-size: 11px; }
