@@ -147,5 +147,65 @@
       </div>
     </section>
   </main>
+  <button id="keep-awake" class="keep-awake" type="button">KEEP SCREEN ON</button>
+  <div class="scroll-buffer" aria-hidden="true"></div>
+  <script>
+    (() => {
+      const button = document.getElementById("keep-awake");
+      let silentAudio;
+      let wakeLock;
+
+      function writeAscii(view, offset, text) {
+        for (let i = 0; i < text.length; i++) view.setUint8(offset + i, text.charCodeAt(i));
+      }
+
+      function makeSilentWav() {
+        const sampleRate = 8000;
+        const sampleCount = sampleRate;
+        const buffer = new ArrayBuffer(44 + sampleCount);
+        const view = new DataView(buffer);
+        writeAscii(view, 0, "RIFF");
+        view.setUint32(4, 36 + sampleCount, true);
+        writeAscii(view, 8, "WAVE");
+        writeAscii(view, 12, "fmt ");
+        view.setUint32(16, 16, true);
+        view.setUint16(20, 1, true);
+        view.setUint16(22, 1, true);
+        view.setUint32(24, sampleRate, true);
+        view.setUint32(28, sampleRate, true);
+        view.setUint16(32, 1, true);
+        view.setUint16(34, 8, true);
+        writeAscii(view, 36, "data");
+        view.setUint32(40, sampleCount, true);
+        for (let i = 44; i < buffer.byteLength; i++) view.setUint8(i, 128);
+        return URL.createObjectURL(new Blob([buffer], { type: "audio/wav" }));
+      }
+
+      async function activate() {
+        try {
+          if ("wakeLock" in navigator) wakeLock = await navigator.wakeLock.request("screen");
+        } catch (_) {}
+
+        try {
+          silentAudio = document.createElement("audio");
+          silentAudio.src = makeSilentWav();
+          silentAudio.loop = true;
+          silentAudio.preload = "auto";
+          silentAudio.setAttribute("playsinline", "");
+          document.body.appendChild(silentAudio);
+          await silentAudio.play();
+          button.textContent = "DISPLAY LOCKED";
+          setTimeout(() => button.classList.add("is-active"), 900);
+        } catch (_) {
+          button.textContent = "TAP AGAIN";
+        }
+      }
+
+      button.addEventListener("click", activate, { once: true });
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden && silentAudio) silentAudio.play().catch(() => {});
+      });
+    })();
+  </script>
 </body>
 </html>
